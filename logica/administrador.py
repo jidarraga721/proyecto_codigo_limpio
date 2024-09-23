@@ -7,7 +7,7 @@ from typing import List
 class Administrador(Registro):
     def __init__(self, id: str, contrasena: int, nombre: str):
         super().__init__(id, contrasena)
-        self.nombre = nombre
+        self.nombre: str = nombre
 
     def calificar_mesero(self, mesero: Mesero, calificacion: int) -> None:
         mesero.calificacion = calificacion

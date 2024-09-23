@@ -2,8 +2,8 @@ class Registro:
     usuarios = []
 
     def __init__(self, id: str, contrasena: int):
-        self.id = id
-        self.contrasena = contrasena
+        self.id: str = id
+        self.contrasena: int = contrasena
 
     def ingresar(self) -> bool:
         for usuario in self.usuarios:
@@ -11,7 +11,7 @@ class Registro:
                 return True
         return False
 
-    def registrar_usuario(self):
+    def registrar_usuario(self) -> None:
         if not any(usuario.id == self.id for usuario in self.usuarios):
             self.usuarios.append(self)
             print(f"Usuario {self.id} registrado exitosamente.")

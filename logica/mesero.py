@@ -6,7 +6,7 @@ from typing import List
 class Mesero(Registro):
     def __init__(self, id: str, contrasena: int, nombre: str):
         super().__init__(id, contrasena)
-        self.nombre = nombre
+        self.nombre: str = nombre
         self.propinas: int = 0
         self.mesas_atendidas: int = 0
         self.calificacion: int = 0

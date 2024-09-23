@@ -1,4 +1,4 @@
 class Platillo:
     def __init__(self, nombre: str, precio: int):
-        self.nombre = nombre
-        self.precio = precio
+        self.nombre: str = nombre
+        self.precio: int = precio

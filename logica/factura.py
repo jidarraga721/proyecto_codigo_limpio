@@ -10,8 +10,8 @@ class Factura:
     def __init__(self, mesa: Mesa, mesero: 'Mesero'):  # Usamos 'Mesero' entre comillas para evitar la importación circular
         self.id = Factura._id_counter
         Factura._id_counter += 1
-        self.mesa = mesa
-        self.mesero = mesero
+        self.mesa: mesa = mesa
+        self.mesero: mesero = mesero
         self.pedido = mesa.pedido
         self.total = sum([platillo.precio for platillo in self.pedido])
         self.propina = self.calcular_propina()

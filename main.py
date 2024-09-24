@@ -108,7 +108,6 @@ class AppController:
             else:
                 print("Opción inválida. Intente de nuevo.")
 
-# Ejecutar el programa
 if __name__ == "__main__":
     controller = AppController()
     controller.menu_principal()

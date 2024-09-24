@@ -3,7 +3,7 @@ from .platillo import Platillo
 
 class Mesa:
     def __init__(self, id: int):
-        self.id: int = id
+        self.id = id
         self.pedido: List[Platillo] = []
 
     def agregar_pedido(self, platillo: Platillo):

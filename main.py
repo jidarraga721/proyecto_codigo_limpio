@@ -82,7 +82,8 @@ class AppController:
         pedido_data = {
             "mesero": factura.mesero.nombre,
             "mesa": factura.mesa.id,
-            "pedido": [{"nombre": platillo.nombre, "precio": platillo.precio} for platillo in factura.pedido],
+            "pedido": [{"nombre": platillo.nombre, "precio": platillo.precio, "cantidad": cantidad}
+                       for platillo, cantidad in factura.pedido],  # Descomponemos la tupla en platillo y cantidad
             "total": factura.total,
             "propina": factura.propina
         }
@@ -95,7 +96,6 @@ class AppController:
             with open(archivo, 'r') as f:
                 pedido_data = json.load(f)
 
-            # Buscar la mesa y mesero por su ID y nombre
             mesa = next((m for m in self.bar.mesas if m.id == pedido_data["mesa"]), None)
             mesero = next((m for m in self.bar.meseros if m.nombre == pedido_data["mesero"]), None)
 
@@ -106,16 +106,14 @@ class AppController:
                 print(f"Error: Mesero {pedido_data['mesero']} no encontrado.")
                 return
 
-            # Construir los platillos del pedido
-            pedido = [Platillo(nombre=item["nombre"], precio=item["precio"]) for item in pedido_data["pedido"]]
+            pedido = [(Platillo(nombre=item["nombre"], precio=item["precio"]), item["cantidad"]) for item in
+                      pedido_data["pedido"]]
 
-            # Crear la factura
             factura = mesero.crear_pedido(mesa, pedido)
             factura.total = pedido_data["total"]
             factura.propina = pedido_data["propina"]
             self.facturas.append(factura)
 
-            # Mostrar la factura cargada
             factura.generar_factura()
             print(f"Pedido cargado desde {archivo}.")
         except FileNotFoundError:
@@ -196,7 +194,7 @@ class AppController:
             else:
                 print(f"No hay suficientes unidades de {nombre_platillo} en el inventario.")
 
-        factura = mesero.crear_pedido(mesa, [p[0] for p in pedido])
+        factura = mesero.crear_pedido(mesa, pedido)  # Pasar el pedido con las cantidades
         self.facturas.append(factura)  # Almacenar la factura creada
         factura.generar_factura()
 

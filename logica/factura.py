@@ -7,18 +7,15 @@ if TYPE_CHECKING:
 class Factura:
     _id_counter = 1
 
-    def __init__(self, mesa: Mesa, mesero: 'Mesero'):
+    def __init__(self, mesa: Mesa, mesero: "Mesero", pedido: list):  # Anotación de tipo condicional
         self.id = Factura._id_counter
         Factura._id_counter += 1
         self.mesa = mesa
         self.mesero = mesero
-        self.pedido = mesa.pedido
-        self.total = self.calcular_total()
+        self.pedido = pedido
+        self.total = sum([platillo.precio * cantidad for platillo, cantidad in self.pedido])
         self.propina = self.calcular_propina()
         print(f"Factura #{self.id} generada para la mesa {self.mesa.id} por el mesero {self.mesero.nombre}.")
-
-    def calcular_total(self) -> int:
-        return sum([platillo.precio for platillo in self.pedido])
 
     def calcular_propina(self) -> int:
         propina = int(self.total * 0.1)
@@ -26,6 +23,16 @@ class Factura:
         return propina
 
     def generar_factura(self) -> str:
-        factura_detalles = f"Factura #{self.id} - Mesa: {self.mesa.id} - Total: {self.total} pesos - Propina: {self.propina} pesos"
+        factura_detalles = f"Factura #{self.id} - Mesa: {self.mesa.id}\n"
+        factura_detalles += f"Atendido por: {self.mesero.nombre}\n"
+        factura_detalles += "Detalle del pedido:\n"
+        factura_detalles += f"{'Cantidad':<10}{'Platillo':<20}{'Precio Unitario':<20}{'Subtotal':<10}\n"
+
+        for platillo, cantidad in self.pedido:
+            subtotal = platillo.precio * cantidad
+            factura_detalles += f"{cantidad:<10}{platillo.nombre:<20}{platillo.precio:<20}{subtotal:<10}\n"
+
+        factura_detalles += f"\n{'Total:':<10}{self.total:<10} pesos\n"
+        factura_detalles += f"{'Propina:':<10}{self.propina:<10} pesos\n"
         print(factura_detalles)
         return factura_detalles

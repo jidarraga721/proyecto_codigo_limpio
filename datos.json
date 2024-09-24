@@ -1,0 +1,39 @@
+{
+    "meseros": [
+        {
+            "id": "1",
+            "contrasena": 123,
+            "nombre": "samuel",
+            "propinas": 0,
+            "mesas_atendidas": 0,
+            "calificacion": 0
+        }
+    ],
+    "administradores": [
+        {
+            "id": "2",
+            "contrasena": 321,
+            "nombre": "juan"
+        }
+    ],
+    "mesas": [
+        {
+            "id": 1,
+            "pedido": []
+        }
+    ],
+    "inventario": [
+        {
+            "nombre": "hamburguesa",
+            "precio": 20000
+        },
+        {
+            "nombre": "salchipapas",
+            "precio": 15000
+        },
+        {
+            "nombre": "cocacola",
+            "precio": 3000
+        }
+    ]
+}

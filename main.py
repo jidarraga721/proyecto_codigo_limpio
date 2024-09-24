@@ -283,6 +283,3 @@ class AppController:
                 print("Opción inválida. Intente de nuevo.")
 
 
-if __name__ == "__main__":
-    controller = AppController()
-    controller.menu_principal()

@@ -1,5 +1,6 @@
 from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo
 
+
 class AppController:
     def __init__(self):
         self.bar = Bar()
@@ -53,17 +54,31 @@ class AppController:
         self.bar.agregar_mesa(mesa)
         print(f"Mesa {id_mesa} añadida correctamente.\n")
 
+    def mostrar_platillos_disponibles(self):
+        if not self.inventario.productos:
+            print("No hay platillos disponibles en el inventario.")
+        else:
+            print("\n--- Platillos Disponibles ---")
+            for platillo in self.inventario.productos:
+                print(f"{platillo.nombre} - {platillo.precio} pesos")
+            print("-----------------------------")
+
     def crear_pedido(self):
         id_mesa = self.input_int("Ingrese el ID de la mesa: ")
         mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
         if mesa is None:
             print(f"Error: Mesa {id_mesa} no encontrada.")
             return
+
         id_mesero = self.input_str("Ingrese el ID del mesero que atiende: ")
         mesero = next((m for m in self.bar.meseros if m.id == id_mesero), None)
         if mesero is None:
             print(f"Error: Mesero {id_mesero} no encontrado.")
             return
+
+        # Mostrar los platillos disponibles antes de que el usuario comience el pedido
+        self.mostrar_platillos_disponibles()
+
         pedido = []
         while True:
             nombre_platillo = self.input_str("Ingrese el nombre del platillo (o 'terminar' para finalizar): ")
@@ -72,9 +87,13 @@ class AppController:
                     print("Debe agregar al menos un platillo.")
                 else:
                     break
-            precio = self.input_int(f"Ingrese el precio de {nombre_platillo}: ")
-            platillo = Platillo(nombre=nombre_platillo, precio=precio)
-            pedido.append(platillo)
+            platillo = next((p for p in self.inventario.productos if p.nombre == nombre_platillo), None)
+            if platillo is None:
+                print(f"Error: El platillo '{nombre_platillo}' no está disponible en el inventario.")
+            else:
+                pedido.append(platillo)
+                print(f"{platillo.nombre} agregado al pedido.")
+
         factura = mesero.crear_pedido(mesa, pedido)
         factura.generar_factura()
 
@@ -140,6 +159,7 @@ class AppController:
                 break
             else:
                 print("Opción inválida. Intente de nuevo.")
+
 
 if __name__ == "__main__":
     controller = AppController()

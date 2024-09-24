@@ -8,6 +8,3 @@ from .cocina import Cocina
 from .inventario import Inventario
 from .bar import Bar
 from .creadorplatillos import CreadorPlatillos
-
-
-

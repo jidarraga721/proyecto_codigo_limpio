@@ -10,10 +10,11 @@ class Mesero(Registro):
         self.calificacion: int = 0
 
     def crear_pedido(self, mesa: Mesa, pedido: list) -> "Factura":
-        from .factura import Factura  # Importación dentro de la función para evitar el ciclo
+        from .factura import Factura
         for platillo, cantidad in pedido:
             for _ in range(cantidad):
                 mesa.agregar_pedido(platillo)
         self.mesas_atendidas += 1
         factura = Factura(mesa=mesa, mesero=self, pedido=pedido)
+        mesa.agregar_factura(factura)  # Añadir la factura a la mesa
         return factura

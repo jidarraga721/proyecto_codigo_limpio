@@ -234,6 +234,22 @@ class AppController:
         else:
             print(f"Error: Mesa {id_mesa} no encontrada.")
 
+    def ver_facturas_mesa(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa para ver las facturas: ")
+        mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
+
+        if not mesa:
+            print(f"No se encontró la mesa con ID {id_mesa}.")
+            return
+
+        if not mesa.facturas:
+            print(f"La mesa {id_mesa} no tiene facturas.")
+            return
+
+        print(f"Facturas de la mesa {id_mesa}:")
+        for factura in mesa.facturas:
+            factura.generar_factura()
+
     def menu_principal(self):
         while True:
             print("\n--- Menú Principal ---")
@@ -248,7 +264,8 @@ class AppController:
             print("9. Ver factura")
             print("10. Guardar pedido")
             print("11. Cargar pedido")
-            print("12. Salir")
+            print("12. Ver todas las facturas de una mesa")
+            print("13. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 self.registrar_mesero()
@@ -270,13 +287,15 @@ class AppController:
                 self.ver_factura()
             elif opcion == "10":
                 if self.facturas:
-                    factura = self.facturas[-1]  # Tomamos la última factura generada
+                    factura = self.facturas[-1]
                     self.guardar_pedido_json(factura)
                 else:
                     print("No hay facturas generadas para guardar.")
             elif opcion == "11":
                 self.cargar_pedido_json()
             elif opcion == "12":
+                self.ver_facturas_mesa()
+            elif opcion == "13":
                 print("Saliendo del sistema...")
                 break
             else:

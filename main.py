@@ -1,3 +1,4 @@
+import json
 from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo
 
 
@@ -6,6 +7,7 @@ class AppController:
         self.bar = Bar()
         self.inventario = Inventario()
         self.creador_platillos = CreadorPlatillos()
+        self.facturas = []  # Lista para almacenar las facturas generadas
 
     def input_int(self, mensaje):
         while True:
@@ -20,6 +22,60 @@ class AppController:
             if valor:
                 return valor
             print("Error: El valor no puede estar vacío.")
+
+    # Métodos para guardar y cargar datos en JSON
+    def guardar_datos_json(self, archivo="datos.json"):
+        datos = {
+            "meseros": [vars(mesero) for mesero in self.bar.meseros],
+            "administradores": [vars(admin) for admin in self.bar.administradores],
+            "mesas": [vars(mesa) for mesa in self.bar.mesas],
+            "inventario": [vars(platillo) for platillo in self.inventario.productos],
+        }
+        with open(archivo, 'w') as f:
+            json.dump(datos, f, indent=4)
+        print(f"Datos guardados en {archivo}.")
+
+    def cargar_datos_json(self, archivo="datos.json"):
+        try:
+            with open(archivo, 'r') as f:
+                datos = json.load(f)
+            # Cargar meseros
+            for mesero_data in datos["meseros"]:
+                mesero = Mesero(
+                    id=mesero_data["id"],
+                    contrasena=mesero_data["contrasena"],
+                    nombre=mesero_data["nombre"]
+                )
+                mesero.propinas = mesero_data.get("propinas", 0)
+                mesero.mesas_atendidas = mesero_data.get("mesas_atendidas", 0)
+                mesero.calificacion = mesero_data.get("calificacion", 0)
+                self.bar.agregar_mesero(mesero)
+
+            # Cargar administradores
+            for admin_data in datos["administradores"]:
+                admin = Administrador(
+                    id=admin_data["id"],
+                    contrasena=admin_data["contrasena"],
+                    nombre=admin_data["nombre"]
+                )
+                self.bar.agregar_administrador(admin)
+
+            # Cargar mesas
+            for mesa_data in datos["mesas"]:
+                mesa = Mesa(id=mesa_data["id"])
+                self.bar.agregar_mesa(mesa)
+
+            # Cargar inventario
+            for platillo_data in datos["inventario"]:
+                platillo = Platillo(
+                    nombre=platillo_data["nombre"],
+                    precio=platillo_data["precio"]
+                )
+                self.inventario.anadir_elementos_inventario(platillo)
+
+            print(f"Datos cargados desde {archivo}.")
+        except FileNotFoundError:
+            print(f"El archivo {archivo} no fue encontrado. No se han cargado datos.")
 
     def registrar_mesero(self):
         id_mesero = self.input_str("Ingrese el ID del mesero: ")
@@ -76,7 +132,6 @@ class AppController:
             print(f"Error: Mesero {id_mesero} no encontrado.")
             return
 
-        # Mostrar los platillos disponibles antes de que el usuario comience el pedido
         self.mostrar_platillos_disponibles()
 
         pedido = []
@@ -95,7 +150,16 @@ class AppController:
                 print(f"{platillo.nombre} agregado al pedido.")
 
         factura = mesero.crear_pedido(mesa, pedido)
+        self.facturas.append(factura)  # Almacenar la factura creada
         factura.generar_factura()
+
+    def ver_factura(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa para ver la factura: ")
+        factura = next((factura for factura in self.facturas if factura.mesa.id == id_mesa), None)
+        if factura:
+            factura.generar_factura()
+        else:
+            print(f"No se encontró una factura para la mesa {id_mesa}.")
 
     def gestionar_inventario(self):
         while True:
@@ -140,7 +204,10 @@ class AppController:
             print("4. Crear pedido")
             print("5. Gestionar inventario")
             print("6. Ver ganancias")
-            print("7. Salir")
+            print("7. Guardar datos")
+            print("8. Cargar datos")
+            print("9. Ver factura")
+            print("10. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 self.registrar_mesero()
@@ -155,6 +222,12 @@ class AppController:
             elif opcion == "6":
                 self.ver_ganancias()
             elif opcion == "7":
+                self.guardar_datos_json()
+            elif opcion == "8":
+                self.cargar_datos_json()
+            elif opcion == "9":
+                self.ver_factura()
+            elif opcion == "10":
                 print("Saliendo del sistema...")
                 break
             else:

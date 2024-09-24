@@ -1,12 +1,13 @@
 import json
-from logica import Mesero, Administrador, Bar, Inventario, Mesa, Platillo
+from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo
 
 
 class AppController:
     def __init__(self):
         self.bar = Bar()
         self.inventario = Inventario()
-        self.facturas = []
+        self.creador_platillos = CreadorPlatillos()
+        self.facturas = []  # Lista para almacenar las facturas generadas
 
     def input_int(self, mensaje):
         while True:
@@ -22,6 +23,7 @@ class AppController:
                 return valor
             print("Error: El valor no puede estar vacío.")
 
+    # Métodos para guardar y cargar datos en JSON
     def guardar_datos_json(self, archivo="datos.json"):
         datos = {
             "meseros": [vars(mesero) for mesero in self.bar.meseros],
@@ -37,6 +39,7 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 datos = json.load(f)
+            # Cargar meseros
             for mesero_data in datos["meseros"]:
                 mesero = Mesero(
                     id=mesero_data["id"],
@@ -48,6 +51,7 @@ class AppController:
                 mesero.calificacion = mesero_data.get("calificacion", 0)
                 self.bar.agregar_mesero(mesero)
 
+            # Cargar administradores
             for admin_data in datos["administradores"]:
                 admin = Administrador(
                     id=admin_data["id"],
@@ -65,97 +69,14 @@ class AppController:
             for platillo_data in datos["inventario"]:
                 platillo = Platillo(
                     nombre=platillo_data["nombre"],
-                    precio=platillo_data["precio"]
+                    precio=platillo_data["precio"],
+                    cantidad=platillo_data["cantidad"]
                 )
-                self.inventario.anadir_elementos_inventario(platillo)
+                self.inventario.anadir_elementos_inventario(platillo, platillo.cantidad)
 
             print(f"Datos cargados desde {archivo}.")
         except FileNotFoundError:
             print(f"El archivo {archivo} no fue encontrado. No se han cargado datos.")
-
-    def registrar_mesero(self):
-        id_mesero = self.input_str("Ingrese el ID del mesero: ")
-        if any(mesero.id == id_mesero for mesero in self.bar.meseros):
-            print(f"Error: El mesero con ID '{id_mesero}' ya existe.")
-            return
-        contrasena = self.input_int("Ingrese la contraseña del mesero: ")
-        nombre = self.input_str("Ingrese el nombre del mesero: ")
-        mesero = Mesero(id=id_mesero, contrasena=contrasena, nombre=nombre)
-        mesero.registrar_usuario()
-        self.bar.agregar_mesero(mesero)
-        print(f"Mesero {nombre} registrado correctamente.\n")
-
-    def registrar_administrador(self):
-        id_admin = self.input_str("Ingrese el ID del administrador: ")
-        if any(admin.id == id_admin for admin in self.bar.administradores):
-            print(f"Error: El administrador con ID '{id_admin}' ya existe.")
-            return
-        contrasena = self.input_int("Ingrese la contraseña del administrador: ")
-        nombre = self.input_str("Ingrese el nombre del administrador: ")
-        administrador = Administrador(id=id_admin, contrasena=contrasena, nombre=nombre)
-        administrador.registrar_usuario()
-        self.bar.agregar_administrador(administrador)
-        print(f"Administrador {nombre} registrado correctamente.\n")
-
-    def agregar_mesa(self):
-        id_mesa = self.input_int("Ingrese el ID de la mesa: ")
-        if any(mesa.id == id_mesa for mesa in self.bar.mesas):
-            print(f"Error: La mesa con ID {id_mesa} ya existe.")
-            return
-        mesa = Mesa(id=id_mesa)
-        self.bar.agregar_mesa(mesa)
-        print(f"Mesa {id_mesa} añadida correctamente.\n")
-
-    def mostrar_platillos_disponibles(self):
-        if not self.inventario.productos:
-            print("No hay platillos disponibles en el inventario.")
-        else:
-            print("\n--- Platillos Disponibles ---")
-            for platillo in self.inventario.productos:
-                print(f"{platillo.nombre} - {platillo.precio} pesos")
-            print("-----------------------------")
-
-    def crear_pedido(self):
-        id_mesa = self.input_int("Ingrese el ID de la mesa: ")
-        mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
-        if mesa is None:
-            print(f"Error: Mesa {id_mesa} no encontrada.")
-            return
-
-        id_mesero = self.input_str("Ingrese el ID del mesero que atiende: ")
-        mesero = next((m for m in self.bar.meseros if m.id == id_mesero), None)
-        if mesero is None:
-            print(f"Error: Mesero {id_mesero} no encontrado.")
-            return
-
-        self.mostrar_platillos_disponibles()
-
-        pedido = []
-        while True:
-            nombre_platillo = self.input_str("Ingrese el nombre del platillo (o 'terminar' para finalizar): ")
-            if nombre_platillo.lower() == "terminar":
-                if not pedido:
-                    print("Debe agregar al menos un platillo.")
-                else:
-                    break
-            platillo = next((p for p in self.inventario.productos if p.nombre == nombre_platillo), None)
-            if platillo is None:
-                print(f"Error: El platillo '{nombre_platillo}' no está disponible en el inventario.")
-            else:
-                pedido.append(platillo)
-                print(f"{platillo.nombre} agregado al pedido.")
-
-        factura = mesero.crear_pedido(mesa, pedido)
-        self.facturas.append(factura)  # Almacenar la factura creada
-        factura.generar_factura()
-
-    def ver_factura(self):
-        id_mesa = self.input_int("Ingrese el ID de la mesa para ver la factura: ")
-        factura = next((factura for factura in self.facturas if factura.mesa.id == id_mesa), None)
-        if factura:
-            factura.generar_factura()
-        else:
-            print(f"No se encontró una factura para la mesa {id_mesa}.")
 
     def guardar_pedido_json(self, factura, archivo="pedido.json"):
         pedido_data = {
@@ -200,24 +121,105 @@ class AppController:
         except FileNotFoundError:
             print(f"El archivo {archivo} no fue encontrado.")
 
+    def registrar_mesero(self):
+        id_mesero = self.input_str("Ingrese el ID del mesero: ")
+        if any(mesero.id == id_mesero for mesero in self.bar.meseros):
+            print(f"Error: El mesero con ID '{id_mesero}' ya existe.")
+            return
+        contrasena = self.input_int("Ingrese la contraseña del mesero: ")
+        nombre = self.input_str("Ingrese el nombre del mesero: ")
+        mesero = Mesero(id=id_mesero, contrasena=contrasena, nombre=nombre)
+        mesero.registrar_usuario()
+        self.bar.agregar_mesero(mesero)
+        print(f"Mesero {nombre} registrado correctamente.\n")
+
+    def registrar_administrador(self):
+        id_admin = self.input_str("Ingrese el ID del administrador: ")
+        if any(admin.id == id_admin for admin in self.bar.administradores):
+            print(f"Error: El administrador con ID '{id_admin}' ya existe.")
+            return
+        contrasena = self.input_int("Ingrese la contraseña del administrador: ")
+        nombre = self.input_str("Ingrese el nombre del administrador: ")
+        administrador = Administrador(id=id_admin, contrasena=contrasena, nombre=nombre)
+        administrador.registrar_usuario()
+        self.bar.agregar_administrador(administrador)
+        print(f"Administrador {nombre} registrado correctamente.\n")
+
+    def agregar_mesa(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa: ")
+        if any(mesa.id == id_mesa for mesa in self.bar.mesas):
+            print(f"Error: La mesa con ID {id_mesa} ya existe.")
+            return
+        mesa = Mesa(id=id_mesa)
+        self.bar.agregar_mesa(mesa)
+        print(f"Mesa {id_mesa} añadida correctamente.\n")
+
+    def mostrar_platillos_disponibles(self):
+        if not self.inventario.productos:
+            print("No hay platillos disponibles en el inventario.")
+        else:
+            print("\n--- Platillos Disponibles ---")
+            for platillo in self.inventario.productos:
+                print(f"{platillo.nombre} - {platillo.precio} pesos - {platillo.cantidad} unidades disponibles")
+            print("-----------------------------")
+
+    def crear_pedido(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa: ")
+        mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
+        if mesa is None:
+            print(f"Error: Mesa {id_mesa} no encontrada.")
+            return
+
+        id_mesero = self.input_str("Ingrese el ID del mesero que atiende: ")
+        mesero = next((m for m in self.bar.meseros if m.id == id_mesero), None)
+        if mesero is None:
+            print(f"Error: Mesero {id_mesero} no encontrado.")
+            return
+
+        self.mostrar_platillos_disponibles()
+
+        pedido = []
+        while True:
+            nombre_platillo = self.input_str("Ingrese el nombre del platillo (o 'terminar' para finalizar): ")
+            if nombre_platillo.lower() == "terminar":
+                if not pedido:
+                    print("Debe agregar al menos un platillo.")
+                else:
+                    break
+            cantidad_pedido = self.input_int(f"Ingrese la cantidad de {nombre_platillo} que desea pedir: ")
+
+            if self.inventario.verificar_existencia(nombre_platillo, cantidad_pedido):
+                platillo = next((p for p in self.inventario.productos if p.nombre == nombre_platillo), None)
+                pedido.append((platillo, cantidad_pedido))
+                self.inventario.restar_cantidad(nombre_platillo, cantidad_pedido)
+                print(f"{cantidad_pedido} unidades de {platillo.nombre} agregadas al pedido.")
+            else:
+                print(f"No hay suficientes unidades de {nombre_platillo} en el inventario.")
+
+        factura = mesero.crear_pedido(mesa, [p[0] for p in pedido])
+        self.facturas.append(factura)  # Almacenar la factura creada
+        factura.generar_factura()
+
+    def ver_factura(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa para ver la factura: ")
+        factura = next((factura for factura in self.facturas if factura.mesa.id == id_mesa), None)
+        if factura:
+            factura.generar_factura()
+        else:
+            print(f"No se encontró una factura para la mesa {id_mesa}.")
+
     def gestionar_inventario(self):
         while True:
             print("1. Añadir platillo al inventario")
-            print("2. Revisar productos faltantes")
-            print("3. Volver al menú principal")
+            print("2. Volver al menú principal")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 nombre = self.input_str("Ingrese el nombre del platillo: ")
                 precio = self.input_int(f"Ingrese el precio de {nombre}: ")
+                cantidad = self.input_int(f"Ingrese la cantidad de {nombre} a añadir: ")
                 platillo = Platillo(nombre=nombre, precio=precio)
-                self.inventario.anadir_elementos_inventario(platillo)
+                self.inventario.anadir_elementos_inventario(platillo, cantidad)
             elif opcion == "2":
-                if not self.inventario.productos_faltantes:
-                    print("No hay productos faltantes.")
-                else:
-                    for faltante in self.inventario.productos_faltantes:
-                        print(f"Producto faltante: {faltante.nombre}")
-            elif opcion == "3":
                 break
             else:
                 print("Opción inválida. Intente de nuevo.")
@@ -283,3 +285,6 @@ class AppController:
                 print("Opción inválida. Intente de nuevo.")
 
 
+if __name__ == "__main__":
+    controller = AppController()
+    controller.menu_principal()

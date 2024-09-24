@@ -1,19 +1,30 @@
 from .platillo import Platillo
-from typing import List
 
 class Inventario:
     def __init__(self):
-        self.productos: List[Platillo] = []
-        self.productos_faltantes: List[Platillo] = []
+        self.productos = []
 
-    def pedido_inventario(self, platillo: Platillo) -> List[Platillo]:
-        if platillo not in self.productos:
-            self.productos_faltantes.append(platillo)
-            print(f"Platillo {platillo.nombre} añadido a la lista de productos faltantes.")
-        return self.productos_faltantes
-
-    def anadir_elementos_inventario(self, platillo: Platillo) -> None:
+    def anadir_elementos_inventario(self, platillo: Platillo, cantidad: int):
+        for producto in self.productos:
+            if producto.nombre == platillo.nombre:
+                producto.cantidad += cantidad
+                print(f"Cantidad de {platillo.nombre} actualizada a {producto.cantidad}.")
+                return
+        platillo.cantidad = cantidad
         self.productos.append(platillo)
-        if platillo in self.productos_faltantes:
-            self.productos_faltantes.remove(platillo)
-        print(f"Platillo {platillo.nombre} añadido al inventario.")
+        print(f"Platillo {platillo.nombre} añadido al inventario con {cantidad} unidades.")
+
+    def verificar_existencia(self, nombre: str, cantidad: int) -> bool:
+        for producto in self.productos:
+            if producto.nombre == nombre and producto.cantidad >= cantidad:
+                return True
+        return False
+
+    def restar_cantidad(self, nombre: str, cantidad: int):
+        for producto in self.productos:
+            if producto.nombre == nombre:
+                if producto.cantidad >= cantidad:
+                    producto.cantidad -= cantidad
+                    print(f"Se han restado {cantidad} unidades de {nombre}. Quedan {producto.cantidad} unidades.")
+                else:
+                    print(f"No hay suficientes unidades de {nombre}.")

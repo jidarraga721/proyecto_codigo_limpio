@@ -1,10 +1,9 @@
-from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, InventarioService, Mesa, Platillo
+from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo
 
 class AppController:
     def __init__(self):
         self.bar = Bar()
         self.inventario = Inventario()
-        self.inventario_service = InventarioService()
         self.creador_platillos = CreadorPlatillos()
 
     def input_int(self, mensaje):
@@ -80,7 +79,38 @@ class AppController:
         factura.generar_factura()
 
     def gestionar_inventario(self):
-        self.inventario_service.gestionar_inventario(self.inventario)
+        while True:
+            print("1. Añadir platillo al inventario")
+            print("2. Revisar productos faltantes")
+            print("3. Volver al menú principal")
+            opcion = input("Seleccione una opción: ")
+            if opcion == "1":
+                nombre = self.input_str("Ingrese el nombre del platillo: ")
+                precio = self.input_int(f"Ingrese el precio de {nombre}: ")
+                platillo = Platillo(nombre=nombre, precio=precio)
+                self.inventario.anadir_elementos_inventario(platillo)
+            elif opcion == "2":
+                if not self.inventario.productos_faltantes:
+                    print("No hay productos faltantes.")
+                else:
+                    for faltante in self.inventario.productos_faltantes:
+                        print(f"Producto faltante: {faltante.nombre}")
+            elif opcion == "3":
+                break
+            else:
+                print("Opción inválida. Intente de nuevo.")
+
+    def ver_ganancias(self):
+        id_mesa = self.input_int("Ingrese el ID de la mesa para ver ganancias: ")
+        mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
+        if mesa:
+            if not self.bar.administradores:
+                print("No hay administradores registrados.")
+            else:
+                admin = self.bar.administradores[0]
+                admin.obtener_ganancias(mesa)
+        else:
+            print(f"Error: Mesa {id_mesa} no encontrada.")
 
     def menu_principal(self):
         while True:
@@ -90,7 +120,8 @@ class AppController:
             print("3. Agregar mesa")
             print("4. Crear pedido")
             print("5. Gestionar inventario")
-            print("6. Salir")
+            print("6. Ver ganancias")
+            print("7. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 self.registrar_mesero()
@@ -103,6 +134,8 @@ class AppController:
             elif opcion == "5":
                 self.gestionar_inventario()
             elif opcion == "6":
+                self.ver_ganancias()
+            elif opcion == "7":
                 print("Saliendo del sistema...")
                 break
             else:

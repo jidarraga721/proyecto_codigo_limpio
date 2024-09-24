@@ -12,7 +12,7 @@ class Mesero(Registro):
         self.calificacion: int = 0
 
     def crear_pedido(self, mesa: Mesa, pedido: List[Platillo]) -> "Factura":
-        from .factura import Factura
+        from .factura import Factura  # Importación dentro del método para evitar ciclo
         for platillo in pedido:
             mesa.agregar_pedido(platillo)
         self.mesas_atendidas += 1

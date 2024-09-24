@@ -1,7 +1,6 @@
 from .registro import Registro
 from .mesero import Mesero
 from .mesa import Mesa
-from typing import List
 
 class Administrador(Registro):
     def __init__(self, id: str, contrasena: int, nombre: str):

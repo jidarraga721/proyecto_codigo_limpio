@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 class Factura:
     _id_counter = 1
 
-    def __init__(self, mesa: Mesa, mesero: "Mesero", pedido: list):  # Anotación de tipo condicional
+    def __init__(self, mesa: Mesa, mesero: "Mesero", pedido: list):
         self.id = Factura._id_counter
         Factura._id_counter += 1
         self.mesa = mesa

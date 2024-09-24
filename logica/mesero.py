@@ -16,5 +16,5 @@ class Mesero(Registro):
                 mesa.agregar_pedido(platillo)
         self.mesas_atendidas += 1
         factura = Factura(mesa=mesa, mesero=self, pedido=pedido)
-        mesa.agregar_factura(factura)  # Añadir la factura a la mesa
+        mesa.agregar_factura(factura)
         return factura

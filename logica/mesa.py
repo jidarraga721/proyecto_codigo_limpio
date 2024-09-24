@@ -5,7 +5,7 @@ class Mesa:
     def __init__(self, id: int):
         self.id = id
         self.pedido: List[Platillo] = []
-        self.facturas: List = []  # Lista para almacenar múltiples facturas
+        self.facturas: List = []
 
     def agregar_pedido(self, platillo: Platillo):
         self.pedido.append(platillo)

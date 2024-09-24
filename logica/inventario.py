@@ -2,7 +2,7 @@ from .platillo import Platillo
 
 class Inventario:
     def __init__(self):
-        self.productos = []
+        self.productos: list[Platillo] = []
 
     def anadir_elementos_inventario(self, platillo: Platillo, cantidad: int):
         for producto in self.productos:
@@ -20,7 +20,7 @@ class Inventario:
                 return True
         return False
 
-    def restar_cantidad(self, nombre: str, cantidad: int):
+    def restar_cantidad(self, nombre: str, cantidad: int) -> None :
         for producto in self.productos:
             if producto.nombre == nombre:
                 if producto.cantidad >= cantidad:

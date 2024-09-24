@@ -1,0 +1,16 @@
+{
+    "mesero": "samuel",
+    "mesa": 1,
+    "pedido": [
+        {
+            "nombre": "hamburguesa",
+            "precio": 20000
+        },
+        {
+            "nombre": "cocacola",
+            "precio": 3000
+        }
+    ],
+    "total": 23000,
+    "propina": 2300
+}

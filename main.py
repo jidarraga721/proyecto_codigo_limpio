@@ -161,6 +161,49 @@ class AppController:
         else:
             print(f"No se encontró una factura para la mesa {id_mesa}.")
 
+    def guardar_pedido_json(self, factura, archivo="pedido.json"):
+        pedido_data = {
+            "mesero": factura.mesero.nombre,
+            "mesa": factura.mesa.id,
+            "pedido": [{"nombre": platillo.nombre, "precio": platillo.precio} for platillo in factura.pedido],
+            "total": factura.total,
+            "propina": factura.propina
+        }
+        with open(archivo, 'w') as f:
+            json.dump(pedido_data, f, indent=4)
+        print(f"Pedido guardado en {archivo}.")
+
+    def cargar_pedido_json(self, archivo="pedido.json"):
+        try:
+            with open(archivo, 'r') as f:
+                pedido_data = json.load(f)
+
+            # Buscar la mesa y mesero por su ID y nombre
+            mesa = next((m for m in self.bar.mesas if m.id == pedido_data["mesa"]), None)
+            mesero = next((m for m in self.bar.meseros if m.nombre == pedido_data["mesero"]), None)
+
+            if not mesa:
+                print(f"Error: Mesa {pedido_data['mesa']} no encontrada.")
+                return
+            if not mesero:
+                print(f"Error: Mesero {pedido_data['mesero']} no encontrado.")
+                return
+
+            # Construir los platillos del pedido
+            pedido = [Platillo(nombre=item["nombre"], precio=item["precio"]) for item in pedido_data["pedido"]]
+
+            # Crear la factura
+            factura = mesero.crear_pedido(mesa, pedido)
+            factura.total = pedido_data["total"]
+            factura.propina = pedido_data["propina"]
+            self.facturas.append(factura)
+
+            # Mostrar la factura cargada
+            factura.generar_factura()
+            print(f"Pedido cargado desde {archivo}.")
+        except FileNotFoundError:
+            print(f"El archivo {archivo} no fue encontrado.")
+
     def gestionar_inventario(self):
         while True:
             print("1. Añadir platillo al inventario")
@@ -207,7 +250,9 @@ class AppController:
             print("7. Guardar datos")
             print("8. Cargar datos")
             print("9. Ver factura")
-            print("10. Salir")
+            print("10. Guardar pedido")
+            print("11. Cargar pedido")
+            print("12. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 self.registrar_mesero()
@@ -228,6 +273,14 @@ class AppController:
             elif opcion == "9":
                 self.ver_factura()
             elif opcion == "10":
+                if self.facturas:
+                    factura = self.facturas[-1]  # Tomamos la última factura generada
+                    self.guardar_pedido_json(factura)
+                else:
+                    print("No hay facturas generadas para guardar.")
+            elif opcion == "11":
+                self.cargar_pedido_json()
+            elif opcion == "12":
                 print("Saliendo del sistema...")
                 break
             else:

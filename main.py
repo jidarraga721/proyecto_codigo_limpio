@@ -7,7 +7,7 @@ class AppController:
         self.bar = Bar()
         self.inventario = Inventario()
         self.creador_platillos = CreadorPlatillos()
-        self.facturas = []  # Lista para almacenar las facturas generadas
+        self.facturas = []
 
     def input_int(self, mensaje):
         while True:
@@ -23,7 +23,6 @@ class AppController:
                 return valor
             print("Error: El valor no puede estar vacío.")
 
-    # Métodos para guardar y cargar datos en JSON
     def guardar_datos_json(self, archivo="datos.json"):
         datos = {
             "meseros": [vars(mesero) for mesero in self.bar.meseros],
@@ -39,7 +38,6 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 datos = json.load(f)
-            # Cargar meseros
             for mesero_data in datos["meseros"]:
                 mesero = Mesero(
                     id=mesero_data["id"],
@@ -51,7 +49,6 @@ class AppController:
                 mesero.calificacion = mesero_data.get("calificacion", 0)
                 self.bar.agregar_mesero(mesero)
 
-            # Cargar administradores
             for admin_data in datos["administradores"]:
                 admin = Administrador(
                     id=admin_data["id"],

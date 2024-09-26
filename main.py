@@ -29,15 +29,11 @@ class AppController:
             "administradores": [vars(admin) for admin in self.bar.administradores],
             "mesas": []
         }
-
         for mesa in self.bar.mesas:
-            # Agregar datos de la mesa
             mesa_data = {
                 "id": mesa.id,
                 "facturas": []
             }
-
-            # Agregar cada factura asociada a la mesa
             for factura in mesa.facturas:
                 factura_data = {
                     "id": factura.id,
@@ -53,10 +49,7 @@ class AppController:
                     "propina": factura.propina
                 }
                 mesa_data["facturas"].append(factura_data)
-
             datos["mesas"].append(mesa_data)
-
-        # Guardar inventario
         datos["inventario"] = [
             {
                 "nombre": platillo.nombre,
@@ -64,11 +57,8 @@ class AppController:
                 "cantidad": platillo.cantidad
             } for platillo in self.inventario.productos
         ]
-
-        # Guardar datos en el archivo JSON
         with open(archivo, 'w') as f:
             json.dump(datos, f, indent=4)
-
         print(f"Datos guardados en {archivo}.")
 
     def cargar_datos_json(self, archivo="datos.json"):

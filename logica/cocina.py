@@ -1,8 +1,7 @@
 from .platillo import Platillo
-from typing import List
 
 class Cocina:
-    def verificacion_pedido(self, pedido: List[Platillo]) -> bool:
+    def verificacion_pedido(self, pedido: list[Platillo]) -> bool:
         if all(pedido):
             print("Pedido verificado: todos los platillos están disponibles.")
             return True

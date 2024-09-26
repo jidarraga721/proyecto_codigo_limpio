@@ -1,11 +1,10 @@
-from typing import List
 from .platillo import Platillo
 
 class Mesa:
     def __init__(self, id: int):
-        self.id = id
-        self.pedido: List[Platillo] = []
-        self.facturas: List = []
+        self.id: int = id
+        self.pedido: list[Platillo] = []
+        self.facturas: list = []
 
     def agregar_pedido(self, platillo: Platillo):
         self.pedido.append(platillo)

@@ -1,13 +1,12 @@
 from .mesa import Mesa
 from .mesero import Mesero
 from .administrador import Administrador
-from typing import List
 
 class Bar:
     def __init__(self):
-        self.mesas: List[Mesa] = []
-        self.meseros: List[Mesero] = []
-        self.administradores: List[Administrador] = []
+        self.mesas: list[Mesa] = []
+        self.meseros: list[Mesero] = []
+        self.administradores: list[Administrador] = []
 
     def agregar_mesa(self, mesa: Mesa) -> None:
         self.mesas.append(mesa)

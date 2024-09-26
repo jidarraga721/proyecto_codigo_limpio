@@ -3,26 +3,16 @@
     "mesa": 1,
     "pedido": [
         {
-            "nombre": "hamburguesa",
-            "precio": 20000,
-            "cantidad": 2
-        },
-        {
             "nombre": "salchipapas",
             "precio": 12000,
             "cantidad": 1
         },
         {
-            "nombre": "cocacola",
-            "precio": 3000,
-            "cantidad": 2
-        },
-        {
             "nombre": "colombiana",
             "precio": 3000,
-            "cantidad": 1
+            "cantidad": 2
         }
     ],
-    "total": 61000,
-    "propina": 6100
+    "total": 18000,
+    "propina": 1800
 }

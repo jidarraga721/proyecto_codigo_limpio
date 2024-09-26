@@ -19,7 +19,13 @@
     "mesas": [
         {
             "id": 1,
-            "pedido": []
+            "pedido": [],
+            "facturas": []
+        },
+        {
+            "id": 2,
+            "pedido": [],
+            "facturas": []
         }
     ],
     "inventario": [

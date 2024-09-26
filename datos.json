@@ -6,7 +6,9 @@
             "nombre": "samuel",
             "propinas": 0,
             "mesas_atendidas": 0,
-            "calificacion": 0
+            "calificaciones": [
+                1
+            ]
         }
     ],
     "administradores": [
@@ -19,12 +21,6 @@
     "mesas": [
         {
             "id": 1,
-            "pedido": [],
-            "facturas": []
-        },
-        {
-            "id": 2,
-            "pedido": [],
             "facturas": []
         }
     ],
@@ -52,7 +48,7 @@
         {
             "nombre": "colombiana",
             "precio": 3000,
-            "cantidad": 5
+            "cantidad": 10
         }
     ]
 }

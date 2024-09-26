@@ -65,42 +65,50 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 datos = json.load(f)
+            self.bar.meseros = []
             for mesero_data in datos["meseros"]:
                 mesero = Mesero(
                     id=mesero_data["id"],
                     contrasena=mesero_data["contrasena"],
                     nombre=mesero_data["nombre"]
                 )
-                mesero.propinas = mesero_data.get("propinas", 0)
+                mesero.calificaciones = mesero_data.get("calificaciones", [])  # Cargar la lista de calificaciones
                 mesero.mesas_atendidas = mesero_data.get("mesas_atendidas", 0)
-                mesero.calificacion = mesero_data.get("calificacion", 0)
-                self.bar.agregar_mesero(mesero)
-
+                mesero.propinas = mesero_data.get("propinas", 0)
+                self.bar.meseros.append(mesero)
+            self.bar.administradores = []
             for admin_data in datos["administradores"]:
                 admin = Administrador(
                     id=admin_data["id"],
                     contrasena=admin_data["contrasena"],
                     nombre=admin_data["nombre"]
                 )
-                self.bar.agregar_administrador(admin)
-
-            # Cargar mesas
+                self.bar.administradores.append(admin)
+            self.bar.mesas = []
             for mesa_data in datos["mesas"]:
                 mesa = Mesa(id=mesa_data["id"])
-                self.bar.agregar_mesa(mesa)
+                for factura_data in mesa_data["facturas"]:
+                    mesero = next((m for m in self.bar.meseros if m.nombre == factura_data["mesero"]), None)
+                    pedido = [
+                        (Platillo(nombre=item["nombre"], precio=item["precio"]), item["cantidad"])
+                        for item in factura_data["pedido"]
+                    ]
+                    factura = Factura(mesa=mesa, mesero=mesero, pedido=pedido)
+                    factura.total = factura_data["total"]
+                    factura.propina = factura_data["propina"]
+                    mesa.agregar_factura(factura)
+                self.bar.mesas.append(mesa)
+            self.inventario.productos = [
+                Platillo(nombre=item["nombre"], precio=item["precio"], cantidad=item["cantidad"])
+                for item in datos["inventario"]
+            ]
 
-            # Cargar inventario
-            for platillo_data in datos["inventario"]:
-                platillo = Platillo(
-                    nombre=platillo_data["nombre"],
-                    precio=platillo_data["precio"],
-                    cantidad=platillo_data["cantidad"]
-                )
-                self.inventario.anadir_elementos_inventario(platillo, platillo.cantidad)
+            print("Datos cargados correctamente desde el archivo JSON.")
 
-            print(f"Datos cargados desde {archivo}.")
         except FileNotFoundError:
-            print(f"El archivo {archivo} no fue encontrado. No se han cargado datos.")
+            print(f"El archivo {archivo} no fue encontrado.")
+        except json.JSONDecodeError:
+            print(f"Error al leer el archivo {archivo}. Asegúrese de que el formato JSON sea correcto.")
 
     def guardar_pedido_json(self, factura, archivo="pedido.json"):
         pedido_data = {
@@ -261,18 +269,34 @@ class AppController:
     def ver_facturas_mesa(self):
         id_mesa = self.input_int("Ingrese el ID de la mesa para ver las facturas: ")
         mesa = next((m for m in self.bar.mesas if m.id == id_mesa), None)
-
         if not mesa:
             print(f"No se encontró la mesa con ID {id_mesa}.")
             return
-
         if not mesa.facturas:
             print(f"La mesa {id_mesa} no tiene facturas.")
             return
-
         print(f"Facturas de la mesa {id_mesa}:")
         for factura in mesa.facturas:
             factura.generar_factura()
+
+    def calificar_mesero(self):
+        id_mesero = self.input_str("Ingrese el ID del mesero a calificar: ")
+        mesero = next((m for m in self.bar.meseros if m.id == id_mesero), None)
+        if mesero is None:
+            print(f"Error: Mesero con ID '{id_mesero}' no encontrado.")
+            return
+        print(f"\nInformación del mesero {mesero.nombre}:")
+        print(f"Mesas atendidas: {mesero.mesas_atendidas}")
+        print(f"Propinas acumuladas: {mesero.propinas} pesos")
+        print(f"Calificación promedio actual: {mesero.calificacion:.2f}/5\n")
+        while True:
+            calificacion = self.input_int("Ingrese una calificación de 1 a 5: ")
+            if 1 <= calificacion <= 5:
+                mesero.agregar_calificacion(calificacion)
+                print(f"Mesero {mesero.nombre} ha sido calificado con {calificacion}/5.\n")
+                break
+            else:
+                print("Error: La calificación debe estar entre 1 y 5.")
 
     def menu_principal(self):
         while True:
@@ -289,7 +313,8 @@ class AppController:
             print("10. Guardar pedido")
             print("11. Cargar pedido")
             print("12. Ver todas las facturas de una mesa")
-            print("13. Salir")
+            print("13. Calificar mesero y ver información")  # Nueva opción combinada
+            print("14. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
                 self.registrar_mesero()
@@ -319,7 +344,9 @@ class AppController:
                 self.cargar_pedido_json()
             elif opcion == "12":
                 self.ver_facturas_mesa()
-            elif opcion == "13":
+            if opcion == "13":
+                self.calificar_mesero()
+            elif opcion == "14":
                 print("Saliendo del sistema...")
                 break
             else:

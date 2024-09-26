@@ -72,7 +72,7 @@ class AppController:
                     contrasena=mesero_data["contrasena"],
                     nombre=mesero_data["nombre"]
                 )
-                mesero.calificaciones = mesero_data.get("calificaciones", [])  # Cargar la lista de calificaciones
+                mesero.calificaciones = mesero_data.get("calificaciones", [])
                 mesero.mesas_atendidas = mesero_data.get("mesas_atendidas", 0)
                 mesero.propinas = mesero_data.get("propinas", 0)
                 self.bar.meseros.append(mesero)
@@ -220,8 +220,8 @@ class AppController:
                 print(f"{cantidad_pedido} unidades de {platillo.nombre} agregadas al pedido.")
             else:
                 print(f"No hay suficientes unidades de {nombre_platillo} en el inventario.")
-        factura = mesero.crear_pedido(mesa, pedido)  # Pasar el pedido con las cantidades
-        self.facturas.append(factura)  # Almacenar la factura creada
+        factura = mesero.crear_pedido(mesa, pedido)
+        self.facturas.append(factura)
         factura.generar_factura()
 
     def ver_factura(self):

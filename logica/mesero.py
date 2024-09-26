@@ -6,9 +6,9 @@ class Mesero(Registro):
     def __init__(self, id: str, contrasena: int, nombre: str):
         super().__init__(id, contrasena)
         self.nombre = nombre
-        self.propinas: int = 0  # Total de propinas acumuladas
-        self.mesas_atendidas: int = 0  # Cantidad de mesas atendidas
-        self.calificaciones: List[int] = []  # Lista para almacenar las calificaciones
+        self.propinas: int = 0
+        self.mesas_atendidas: int = 0
+        self.calificaciones: List[int] = []
 
     def crear_pedido(self, mesa: Mesa, pedido: list) -> "Factura":
         from .factura import Factura

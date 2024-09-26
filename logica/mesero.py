@@ -22,12 +22,10 @@ class Mesero(Registro):
 
     @property
     def calificacion(self):
-        """Calcula el promedio de las calificaciones."""
         if not self.calificaciones:
             return 0
         return sum(self.calificaciones) / len(self.calificaciones)
 
     def agregar_calificacion(self, nueva_calificacion: int):
-        """Agrega una nueva calificación y actualiza el promedio."""
         self.calificaciones.append(nueva_calificacion)
         print(f"Calificación añadida: {nueva_calificacion}. Promedio actual: {self.calificacion:.2f}/5.\n")

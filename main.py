@@ -298,24 +298,100 @@ class AppController:
             else:
                 print("Error: La calificación debe estar entre 1 y 5.")
 
+    def iniciar_sesion_mesero(self):
+        id_mesero = self.input_str("Ingrese el ID del mesero: ")
+        contrasena = self.input_int("Ingrese la contraseña del mesero: ")
+
+        mesero = next((m for m in self.bar.meseros if m.id == id_mesero and m.contrasena == contrasena), None)
+
+        if mesero is None:
+            print("Error: ID o contraseña incorrecta.")
+            return
+
+        print(f"Bienvenido, {mesero.nombre}.")
+        self.menu_mesero(mesero)
+
+    def iniciar_sesion_administrador(self):
+        id_admin = self.input_str("Ingrese el ID del administrador: ")
+        contrasena = self.input_int("Ingrese la contraseña del administrador: ")
+
+        administrador = next((a for a in self.bar.administradores if a.id == id_admin and a.contrasena == contrasena),
+                             None)
+
+        if administrador is None:
+            print("Error: ID o contraseña incorrecta.")
+            return
+
+        print(f"Bienvenido, {administrador.nombre}.")
+        self.menu_administrador(administrador)
+
     def menu_principal(self):
         while True:
             print("\n--- Menú Principal ---")
+            print("1. Iniciar sesión como Mesero")
+            print("2. Iniciar sesión como Administrador")
+            print("3. Cargar datos")
+            print("4. Guardar datos")
+            print("5. Salir")
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                self.iniciar_sesion_mesero()
+            elif opcion == "2":
+                self.iniciar_sesion_administrador()
+            elif opcion == "3":
+                self.cargar_datos_json()
+            elif opcion == "4":
+                self.guardar_datos_json()
+            elif opcion == "5":
+                print("Saliendo del sistema...")
+                break
+            else:
+                print("Opción inválida. Intente de nuevo.")
+
+    def menu_mesero(self, mesero):
+        while True:
+            print(f"\n--- Menú Mesero ({mesero.nombre}) ---")
+            print("1. Crear pedido")
+            print("2. Ver factura")
+            print("3. Guardar pedido")
+            print("4. Cargar pedido")
+            print("5. Volver al menú principal")
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == "1":
+                self.crear_pedido(mesero)
+            elif opcion == "2":
+                self.ver_factura()
+            elif opcion == "3":
+                if self.facturas:
+                    factura = self.facturas[-1]
+                    self.guardar_pedido_json(factura)
+                else:
+                    print("No hay facturas generadas para guardar.")
+            elif opcion == "4":
+                self.cargar_pedido_json()
+            elif opcion == "5":
+                break
+            else:
+                print("Opción inválida. Intente de nuevo.")
+
+    def menu_administrador(self, administrador):
+        while True:
+            print(f"\n--- Menú Administrador ({administrador.nombre}) ---")
             print("1. Registrar mesero")
             print("2. Registrar administrador")
             print("3. Agregar mesa")
-            print("4. Crear pedido")
-            print("5. Gestionar inventario")
-            print("6. Ver ganancias")
-            print("7. Guardar datos")
-            print("8. Cargar datos")
-            print("9. Ver factura")
-            print("10. Guardar pedido")
-            print("11. Cargar pedido")
-            print("12. Ver todas las facturas de una mesa")
-            print("13. Calificar mesero y ver información")  # Nueva opción combinada
-            print("14. Salir")
+            print("4. Gestionar inventario")
+            print("5. Ver ganancias")
+            print("6. Ver todas las facturas de una mesa")
+            print("7. Calificar mesero")
+            print("8. Volver al menú principal")
+
             opcion = input("Seleccione una opción: ")
+
             if opcion == "1":
                 self.registrar_mesero()
             elif opcion == "2":
@@ -323,31 +399,15 @@ class AppController:
             elif opcion == "3":
                 self.agregar_mesa()
             elif opcion == "4":
-                self.crear_pedido()
-            elif opcion == "5":
                 self.gestionar_inventario()
-            elif opcion == "6":
+            elif opcion == "5":
                 self.ver_ganancias()
-            elif opcion == "7":
-                self.guardar_datos_json()
-            elif opcion == "8":
-                self.cargar_datos_json()
-            elif opcion == "9":
-                self.ver_factura()
-            elif opcion == "10":
-                if self.facturas:
-                    factura = self.facturas[-1]
-                    self.guardar_pedido_json(factura)
-                else:
-                    print("No hay facturas generadas para guardar.")
-            elif opcion == "11":
-                self.cargar_pedido_json()
-            elif opcion == "12":
+            elif opcion == "6":
                 self.ver_facturas_mesa()
-            if opcion == "13":
+            elif opcion == "7":
                 self.calificar_mesero()
-            elif opcion == "14":
-                print("Saliendo del sistema...")
+            elif opcion == "8":
                 break
             else:
                 print("Opción inválida. Intente de nuevo.")
+

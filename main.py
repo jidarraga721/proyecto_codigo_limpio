@@ -1,5 +1,5 @@
 import json
-from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo
+from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo, Factura
 
 
 class AppController:

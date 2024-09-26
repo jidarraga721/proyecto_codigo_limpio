@@ -115,7 +115,7 @@ class AppController:
             "mesero": factura.mesero.nombre,
             "mesa": factura.mesa.id,
             "pedido": [{"nombre": platillo.nombre, "precio": platillo.precio, "cantidad": cantidad}
-                       for platillo, cantidad in factura.pedido],  # Descomponemos la tupla en platillo y cantidad
+                       for platillo, cantidad in factura.pedido],
             "total": factura.total,
             "propina": factura.propina
         }
@@ -137,10 +137,8 @@ class AppController:
             if not mesero:
                 print(f"Error: Mesero {pedido_data['mesero']} no encontrado.")
                 return
-
             pedido = [(Platillo(nombre=item["nombre"], precio=item["precio"]), item["cantidad"]) for item in
                       pedido_data["pedido"]]
-
             factura = mesero.crear_pedido(mesa, pedido)
             factura.total = pedido_data["total"]
             factura.propina = pedido_data["propina"]
@@ -199,13 +197,11 @@ class AppController:
         if mesa is None:
             print(f"Error: Mesa {id_mesa} no encontrada.")
             return
-
         id_mesero = self.input_str("Ingrese el ID del mesero que atiende: ")
         mesero = next((m for m in self.bar.meseros if m.id == id_mesero), None)
         if mesero is None:
             print(f"Error: Mesero {id_mesero} no encontrado.")
             return
-
         self.mostrar_platillos_disponibles()
 
         pedido = []
@@ -217,7 +213,6 @@ class AppController:
                 else:
                     break
             cantidad_pedido = self.input_int(f"Ingrese la cantidad de {nombre_platillo} que desea pedir: ")
-
             if self.inventario.verificar_existencia(nombre_platillo, cantidad_pedido):
                 platillo = next((p for p in self.inventario.productos if p.nombre == nombre_platillo), None)
                 pedido.append((platillo, cantidad_pedido))
@@ -225,7 +220,6 @@ class AppController:
                 print(f"{cantidad_pedido} unidades de {platillo.nombre} agregadas al pedido.")
             else:
                 print(f"No hay suficientes unidades de {nombre_platillo} en el inventario.")
-
         factura = mesero.crear_pedido(mesa, pedido)  # Pasar el pedido con las cantidades
         self.facturas.append(factura)  # Almacenar la factura creada
         factura.generar_factura()
@@ -301,31 +295,24 @@ class AppController:
     def iniciar_sesion_mesero(self):
         id_mesero = self.input_str("Ingrese el ID del mesero: ")
         contrasena = self.input_int("Ingrese la contraseña del mesero: ")
-
         mesero = next((m for m in self.bar.meseros if m.id == id_mesero and m.contrasena == contrasena), None)
-
         if mesero is None:
             print("Error: ID o contraseña incorrecta.")
             return
-
         print(f"Bienvenido, {mesero.nombre}.")
         self.menu_mesero(mesero)
 
     def iniciar_sesion_administrador(self):
         id_admin = self.input_str("Ingrese el ID del administrador: ")
         contrasena = self.input_int("Ingrese la contraseña del administrador: ")
-
-        administrador = next((a for a in self.bar.administradores if a.id == id_admin and a.contrasena == contrasena),
-                             None)
-
+        administrador = next((a for a in self.bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
         if administrador is None:
             print("Error: ID o contraseña incorrecta.")
             return
-
         print(f"Bienvenido, {administrador.nombre}.")
         self.menu_administrador(administrador)
 
-    def menu_principal(self):
+    def menu_inicial(self):
         while True:
             print("\n--- Menú Principal ---")
             print("1. Iniciar sesión como Mesero")

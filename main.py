@@ -342,7 +342,7 @@ class AppController:
             opcion = input("Seleccione una opción: ")
 
             if opcion == "1":
-                self.crear_pedido(mesero)
+                self.crear_pedido()  # Quitar el parámetro mesero
             elif opcion == "2":
                 self.ver_factura()
             elif opcion == "3":

@@ -4,9 +4,9 @@ from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mes
 
 class AppController:
     def __init__(self):
-        self.bar = Bar()
-        self.inventario = Inventario()
-        self.creador_platillos = CreadorPlatillos()
+        self.bar: Bar = Bar()
+        self.inventario: Inventario = Inventario()
+        self.creador_platillos: CreadorPlatillos = CreadorPlatillos()
         self.facturas = []
 
     def input_int(self, mensaje):
@@ -102,9 +102,7 @@ class AppController:
                 Platillo(nombre=item["nombre"], precio=item["precio"], cantidad=item["cantidad"])
                 for item in datos["inventario"]
             ]
-
             print("Datos cargados correctamente desde el archivo JSON.")
-
         except FileNotFoundError:
             print(f"El archivo {archivo} no fue encontrado.")
         except json.JSONDecodeError:
@@ -127,10 +125,8 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 pedido_data = json.load(f)
-
             mesa = next((m for m in self.bar.mesas if m.id == pedido_data["mesa"]), None)
             mesero = next((m for m in self.bar.meseros if m.nombre == pedido_data["mesero"]), None)
-
             if not mesa:
                 print(f"Error: Mesa {pedido_data['mesa']} no encontrada.")
                 return
@@ -317,9 +313,8 @@ class AppController:
             print("\n--- Menú Principal ---")
             print("1. Iniciar sesión como Mesero")
             print("2. Iniciar sesión como Administrador")
-            print("3. Cargar datos")
-            print("4. Guardar datos")
-            print("5. Salir")
+            print("3. Guardar datos")
+            print("4. Salir")
 
             opcion = input("Seleccione una opción: ")
 
@@ -328,10 +323,8 @@ class AppController:
             elif opcion == "2":
                 self.iniciar_sesion_administrador()
             elif opcion == "3":
-                self.cargar_datos_json()
-            elif opcion == "4":
                 self.guardar_datos_json()
-            elif opcion == "5":
+            elif opcion == "4":
                 print("Saliendo del sistema...")
                 break
             else:

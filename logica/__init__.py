@@ -6,5 +6,5 @@ from .factura import Factura
 from .administrador import Administrador
 from .cocina import Cocina
 from .inventario import Inventario
-from .bar import Bar
+from .bar import Bar, GestorBar
 from .creadorplatillos import CreadorPlatillos

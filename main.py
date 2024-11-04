@@ -89,7 +89,6 @@ class AppController:
                 for item in datos["inventario"]
             ]
             print("Datos cargados correctamente desde el archivo JSON.")
-
         except FileNotFoundError:
             print(f"El archivo {archivo} no fue encontrado.")
         except json.JSONDecodeError:
@@ -98,8 +97,7 @@ class AppController:
     def iniciar_sesion_mesero(self):
         id_mesero = input("Ingrese el ID del mesero: ")
         contrasena = int(input("Ingrese la contraseña del mesero: "))
-        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena),
-                      None)
+        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena),None)
         if mesero:
             print(f"Bienvenido, {mesero.nombre}.")
             self.menu_mesero(mesero)
@@ -123,9 +121,7 @@ class AppController:
             print("2. Iniciar sesión como Administrador")
             print("3. Guardar datos")
             print("4. Salir")
-
             opcion = input("Seleccione una opción: ")
-
             if opcion == "1":
                 self.iniciar_sesion_mesero()
             elif opcion == "2":
@@ -143,29 +139,23 @@ class AppController:
             print(f"\n--- Menú Mesero ({mesero.nombre}) ---")
             print("1. Crear pedido")
             print("2. Ver factura")
-            print("3. Guardar pedido")
-            print("4. Cargar pedido")
-            print("5. Volver al menú principal")
+            print("3. Volver al menú principal")
+
             opcion = input("Seleccione una opción: ")
+
             if opcion == "1":
                 id_mesa = int(input("Ingrese el ID de la mesa: "))
                 mesa = next((m for m in self.gestor_bar.bar.mesas if m.id == id_mesa), None)
+
                 if mesa:
                     factura = mesero.crear_pedido(mesa, self.inventario)
                     self.facturas.append(factura)
                 else:
                     print(f"Error: Mesa con ID {id_mesa} no encontrada.")
+
             elif opcion == "2":
                 self.ver_factura()
             elif opcion == "3":
-                if self.facturas:
-                    factura = self.facturas[-1]
-                    self.guardar_pedido_json(factura)
-                else:
-                    print("No hay facturas generadas para guardar.")
-            elif opcion == "4":
-                self.cargar_pedido_json()
-            elif opcion == "5":
                 break
             else:
                 print("Opción inválida. Intente de nuevo.")
@@ -215,52 +205,9 @@ class AppController:
         factura = mesa.facturas[-1]
         factura.generar_factura()
 
-    def cargar_pedido_json(self, archivo="pedido.json"):
-        try:
-            with open(archivo, 'r') as f:
-                pedido_data = json.load(f)
-            mesa = next((m for m in self.gestor_bar.bar.mesas if m.id == pedido_data["mesa"]), None)
-            mesero = next((m for m in self.gestor_bar.bar.meseros if m.nombre == pedido_data["mesero"]), None)
-            if not mesa:
-                print(f"Error: Mesa {pedido_data['mesa']} no encontrada.")
-                return
-            if not mesero:
-                print(f"Error: Mesero {pedido_data['mesero']} no encontrado.")
-                return
-            pedido = [(Platillo(nombre=item["nombre"], precio=item["precio"]), item["cantidad"]) for item in
-                      pedido_data["pedido"]]
-            factura = mesero.crear_pedido(mesa, pedido)
-            factura.total = pedido_data["total"]
-            factura.propina = pedido_data["propina"]
-            self.facturas.append(factura)
-            factura.generar_factura()
-            print(f"Pedido cargado desde {archivo}.")
-        except FileNotFoundError:
-            print(f"El archivo {archivo} no fue encontrado.")
-        except json.JSONDecodeError:
-            print(f"Error al leer el archivo {archivo}. Asegúrese de que el formato JSON sea correcto.")
-
-    def guardar_pedido_json(self, factura, archivo="pedido.json"):
-        pedido_data = {
-            "mesero": factura.mesero.nombre,
-            "mesa": factura.mesa.id,
-            "pedido": [
-                {
-                    "nombre": platillo.nombre,
-                    "precio": platillo.precio,
-                    "cantidad": cantidad
-                } for platillo, cantidad in factura.pedido
-            ],
-            "total": factura.total,
-            "propina": factura.propina
-        }
-        with open(archivo, 'w') as f:
-            json.dump(pedido_data, f, indent=4)
-        print(f"Pedido guardado en {archivo}.")
-
     def ver_ganancias(self, administrador):
         total_ganancias = 0
         for mesa in self.gestor_bar.bar.mesas:
-            ganancias_mesa = administrador.obtener_ganancias(mesa)
-            total_ganancias += ganancias_mesa
+            for factura in mesa.facturas:
+                total_ganancias += factura.total
         print(f"Las ganancias totales son: {total_ganancias} pesos.\n")

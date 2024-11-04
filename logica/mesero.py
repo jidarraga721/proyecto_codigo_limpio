@@ -10,8 +10,9 @@ class Mesero(Registro):
         self.mesas_atendidas: int = 0
         self.calificaciones: list[int] = []
 
-    def crear_pedido(self, mesa: Mesa, inventario) -> Factura:
+    def crear_pedido(self, mesa, inventario) -> Factura:
         pedido = []
+
         while True:
             nombre_platillo = input("Ingrese el nombre del platillo (o 'terminar' para finalizar): ").strip()
             if nombre_platillo.lower() == "terminar":
@@ -20,17 +21,26 @@ class Mesero(Registro):
                 else:
                     break
             else:
-                cantidad_pedido = int(input(f"Ingrese la cantidad de {nombre_platillo} que desea pedir: "))
+                while True:
+                    try:
+                        cantidad_pedido = int(input(f"Ingrese la cantidad de {nombre_platillo} que desea pedir: "))
+                        break
+                    except ValueError:
+                        print("Error: La cantidad debe ser un número entero. Intente nuevamente.")
+
                 platillo = next((p for p in inventario.productos if p.nombre == nombre_platillo), None)
+
                 if platillo and platillo.cantidad >= cantidad_pedido:
                     pedido.append((platillo, cantidad_pedido))
                     platillo.cantidad -= cantidad_pedido
                     print(f"{cantidad_pedido} unidades de {nombre_platillo} añadidas al pedido.")
                 else:
                     print(f"No hay suficientes unidades de {nombre_platillo} en el inventario.")
+
         factura = Factura(mesa=mesa, mesero=self, pedido=pedido)
         mesa.agregar_factura(factura)
         factura.generar_factura()
+
         print(f"Pedido creado y factura generada para la mesa {mesa.id}.")
         return factura
 

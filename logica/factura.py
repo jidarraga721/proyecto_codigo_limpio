@@ -36,3 +36,5 @@ class Factura:
         factura_detalles += f"{'Propina:':<10}{self.propina:<10} pesos\n"
         print(factura_detalles)
         return factura_detalles
+
+

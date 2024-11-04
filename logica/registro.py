@@ -6,9 +6,9 @@ class Registro:
         self.contrasena: int = contrasena
 
     def ingresar(self) -> bool:
-        for usuario in self.usuarios:
-            if usuario.id == self.id and usuario.contrasena == self.contrasena:
-                return True
+        usuario_encontrado = next((usuario for usuario in self.usuarios if usuario.id == self.id), None)
+        if usuario_encontrado and usuario_encontrado.contrasena == self.contrasena:
+            return True
         return False
 
     def registrar_usuario(self) -> None:

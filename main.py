@@ -1,5 +1,3 @@
-# main.py
-
 import json
 from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo, Factura, GestorBar
 
@@ -13,11 +11,11 @@ class AppController:
 
     def guardar_datos_json(self, archivo="datos.json"):
         datos = {
-            "meseros": [vars(mesero) for mesero in self.gestor_bar.meseros],
-            "administradores": [vars(admin) for admin in self.gestor_bar.administradores],
+            "meseros": [vars(mesero) for mesero in self.gestor_bar.bar.meseros],
+            "administradores": [vars(admin) for admin in self.gestor_bar.bar.administradores],
             "mesas": []
         }
-        for mesa in self.gestor_bar.mesas:
+        for mesa in self.gestor_bar.bar.mesas:
             mesa_data = {
                 "id": mesa.id,
                 "facturas": []
@@ -53,7 +51,7 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 datos = json.load(f)
-            self.gestor_bar.meseros = []
+            self.gestor_bar.bar.meseros = []
             for mesero_data in datos["meseros"]:
                 mesero = Mesero(
                     id=mesero_data["id"],
@@ -63,20 +61,20 @@ class AppController:
                 mesero.calificaciones = mesero_data.get("calificaciones", [])
                 mesero.mesas_atendidas = mesero_data.get("mesas_atendidas", 0)
                 mesero.propinas = mesero_data.get("propinas", 0)
-                self.gestor_bar.meseros.append(mesero)
-            self.gestor_bar.administradores = []
+                self.gestor_bar.bar.meseros.append(mesero)
+            self.gestor_bar.bar.administradores = []
             for admin_data in datos["administradores"]:
                 admin = Administrador(
                     id=admin_data["id"],
                     contrasena=admin_data["contrasena"],
                     nombre=admin_data["nombre"]
                 )
-                self.gestor_bar.administradores.append(admin)
-            self.gestor_bar.mesas = []
+                self.gestor_bar.bar.administradores.append(admin)
+            self.gestor_bar.bar.mesas = []
             for mesa_data in datos["mesas"]:
                 mesa = Mesa(id=mesa_data["id"])
                 for factura_data in mesa_data["facturas"]:
-                    mesero = next((m for m in self.gestor_bar.meseros if m.nombre == factura_data["mesero"]), None)
+                    mesero = next((m for m in self.gestor_bar.bar.meseros if m.nombre == factura_data["mesero"]), None)
                     pedido = [
                         (Platillo(nombre=item["nombre"], precio=item["precio"]), item["cantidad"])
                         for item in factura_data["pedido"]
@@ -85,12 +83,13 @@ class AppController:
                     factura.total = factura_data["total"]
                     factura.propina = factura_data["propina"]
                     mesa.agregar_factura(factura)
-                self.gestor_bar.mesas.append(mesa)
+                self.gestor_bar.bar.mesas.append(mesa)
             self.inventario.productos = [
                 Platillo(nombre=item["nombre"], precio=item["precio"], cantidad=item["cantidad"])
                 for item in datos["inventario"]
             ]
             print("Datos cargados correctamente desde el archivo JSON.")
+
         except FileNotFoundError:
             print(f"El archivo {archivo} no fue encontrado.")
         except json.JSONDecodeError:
@@ -99,17 +98,18 @@ class AppController:
     def iniciar_sesion_mesero(self):
         id_mesero = input("Ingrese el ID del mesero: ")
         contrasena = int(input("Ingrese la contraseña del mesero: "))
-        mesero = next((m for m in self.gestor_bar.meseros if m.id == id_mesero and m.contrasena == contrasena), None)
+        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena),
+                      None)
         if mesero:
             print(f"Bienvenido, {mesero.nombre}.")
             self.menu_mesero(mesero)
         else:
-            print("Error: ID o contraseña incorrecta.")
+            print("ID o contraseña incorrectos. Intente de nuevo.")
 
     def iniciar_sesion_administrador(self):
         id_admin = input("Ingrese el ID del administrador: ")
         contrasena = int(input("Ingrese la contraseña del administrador: "))
-        administrador = next((a for a in self.gestor_bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
+        administrador = next((a for a in self.gestor_bar.bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
         if administrador:
             print(f"Bienvenido, {administrador.nombre}.")
             self.menu_administrador(administrador)
@@ -205,7 +205,7 @@ class AppController:
 
     def ver_factura(self):
         id_mesa = int(input("Ingrese el ID de la mesa para ver la factura: "))
-        mesa = next((m for m in self.gestor_bar.mesas if m.id == id_mesa), None)
+        mesa = next((m for m in self.gestor_bar.bar.mesas if m.id == id_mesa), None)
         if not mesa:
             print(f"No se encontró una mesa con ID {id_mesa}.")
             return
@@ -219,8 +219,8 @@ class AppController:
         try:
             with open(archivo, 'r') as f:
                 pedido_data = json.load(f)
-            mesa = next((m for m in self.gestor_bar.mesas if m.id == pedido_data["mesa"]), None)
-            mesero = next((m for m in self.gestor_bar.meseros if m.nombre == pedido_data["mesero"]), None)
+            mesa = next((m for m in self.gestor_bar.bar.mesas if m.id == pedido_data["mesa"]), None)
+            mesero = next((m for m in self.gestor_bar.bar.meseros if m.nombre == pedido_data["mesero"]), None)
             if not mesa:
                 print(f"Error: Mesa {pedido_data['mesa']} no encontrada.")
                 return

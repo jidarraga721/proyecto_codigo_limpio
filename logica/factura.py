@@ -37,4 +37,12 @@ class Factura:
         print(factura_detalles)
         return factura_detalles
 
-
+    def ver_factura(self):
+        print(f"Factura para la mesa {self.mesa.id}:")
+        print(f"Mesero: {self.mesero.nombre}")
+        print("Pedido:")
+        for platillo, cantidad in self.pedido:
+            print(f" - {platillo.nombre} x{cantidad} - ${platillo.precio * cantidad}")
+        print(f"Total: ${self.total}")
+        print(f"Propina: ${self.propina}")
+        print(f"Total con propina: ${self.total + self.propina}")

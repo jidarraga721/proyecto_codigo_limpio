@@ -7,10 +7,10 @@ class Administrador(Registro):
         super().__init__(id, contrasena)
         self.nombre: str = nombre
 
-    def autenticar(self, contrasena):
+    def autenticar(self, contrasena) -> bool:
         return self.contrasena == contrasena
 
-    def calificar_mesero(self, gestor_bar, id_mesero: str, calificacion: int):
+    def calificar_mesero(self, gestor_bar, id_mesero: str, calificacion: int) -> None:
         mesero = next((m for m in gestor_bar.bar.meseros if m.id == id_mesero), None)
         if not mesero:
             print(f"No se encontró un mesero con ID {id_mesero}.")
@@ -28,7 +28,6 @@ class Administrador(Registro):
 
     def agregar_mesa(self, gestor_bar):
         id_mesa = int(input("Ingrese el ID de la mesa: "))
-        # Verificar si la mesa ya existe
         if any(mesa.id == id_mesa for mesa in gestor_bar.bar.mesas):
             print(f"Error: La mesa con ID {id_mesa} ya existe.")
             return

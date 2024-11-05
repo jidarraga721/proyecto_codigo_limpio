@@ -16,7 +16,7 @@ class GestorBar:
         self.bar.mesas.append(mesa)
         print(f"Mesa {mesa.id} añadida al bar.")
 
-    def registrar_y_agregar_mesero(self):
+    def registrar_y_agregar_mesero(self) -> None:
         id_mesero = input("Ingrese el ID del mesero: ")
         if any(mesero.id == id_mesero for mesero in self.bar.meseros):
             print(f"Error: El mesero con ID '{id_mesero}' ya existe.")
@@ -33,7 +33,7 @@ class GestorBar:
         self.bar.meseros.append(mesero)
         print(f"Mesero {nombre} registrado y añadido correctamente.\n")
 
-    def registrar_y_agregar_administrador(self):
+    def registrar_y_agregar_administrador(self) -> None:
         id_admin = input("Ingrese el ID del administrador: ")
         if any(admin.id == id_admin for admin in self.bar.administradores):
             print(f"Error: El administrador con ID '{id_admin}' ya existe.")

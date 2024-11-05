@@ -21,7 +21,7 @@ class Inventario:
         print(f"No hay suficientes unidades de {nombre}.")
         return False
 
-    def gestionar_inventario(self):
+    def gestionar_inventario(self) -> None:
         while True:
             print("\n--- Gestión de Inventario ---")
             print("1. Añadir platillo al inventario")

@@ -1,6 +1,5 @@
 from .registro import Registro
 from .factura import Factura
-from .mesa import Mesa
 
 class Mesero(Registro):
     def __init__(self, id: str, contrasena: int, nombre: str):
@@ -12,7 +11,6 @@ class Mesero(Registro):
 
     def crear_pedido(self, mesa, inventario) -> Factura:
         pedido = []
-
         while True:
             nombre_platillo = input("Ingrese el nombre del platillo (o 'terminar' para finalizar): ").strip()
             if nombre_platillo.lower() == "terminar":

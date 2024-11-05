@@ -8,7 +8,6 @@ class Mesa:
         self.facturas: list = []
 
     def agregar_pedido(self, platillo: Platillo, cantidad: int):
-        # Agrega el platillo y la cantidad al pedido
         self.pedido.append((platillo, cantidad))
         print(f"{cantidad} unidades de {platillo.nombre} añadidas a la mesa {self.id}.")
 

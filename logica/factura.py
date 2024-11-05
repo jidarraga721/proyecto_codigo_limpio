@@ -8,13 +8,13 @@ class Factura:
     _id_counter = 1
 
     def __init__(self, mesa: Mesa, mesero: "Mesero", pedido: list):
-        self.id = Factura._id_counter
+        self.id: int = Factura._id_counter
         Factura._id_counter += 1
-        self.mesa = mesa
-        self.mesero = mesero
-        self.pedido = pedido
-        self.total = sum([platillo.precio * cantidad for platillo, cantidad in self.pedido])
-        self.propina = self.calcular_propina()
+        self.mesa: Mesa = mesa
+        self.mesero: Mesero = mesero
+        self.pedido: list = pedido
+        self.total: int = sum([platillo.precio * cantidad for platillo, cantidad in self.pedido])
+        self.propina: int = self.calcular_propina()
         print(f"Factura #{self.id} generada para la mesa {self.mesa.id} por el mesero {self.mesero.nombre}.")
 
     def calcular_propina(self) -> int:

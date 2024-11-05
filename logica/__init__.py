@@ -8,3 +8,4 @@ from .cocina import Cocina
 from .inventario import Inventario
 from .bar import Bar, GestorBar
 from .creadorplatillos import CreadorPlatillos
+from .iniciarsesion import IniciarSesion

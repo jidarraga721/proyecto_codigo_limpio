@@ -1,5 +1,5 @@
 import json
-from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo, Factura, GestorBar
+from logica import Mesero, Administrador, Bar, Inventario, CreadorPlatillos, Mesa, Platillo, Factura, GestorBar, IniciarSesion
 
 
 class AppController:
@@ -8,6 +8,7 @@ class AppController:
         self.inventario = Inventario()
         self.creador_platillos = CreadorPlatillos()
         self.facturas = []
+        self.sesion = IniciarSesion(self.gestor_bar)
 
     def guardar_datos_json(self, archivo="datos.json"):
         datos = {
@@ -94,53 +95,19 @@ class AppController:
         except json.JSONDecodeError:
             print(f"Error al leer el archivo {archivo}. Asegúrese de que el formato JSON sea correcto.")
 
-    def iniciar_sesion_mesero(self):
-        id_mesero = input("Ingrese el ID del mesero: ")
-        while True:
-            try:
-                contrasena = int(input("Ingrese la contraseña del mesero: "))
-                break
-            except ValueError:
-                print("Error: La contraseña debe ser un número. Intente nuevamente.")
-        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena), None)
-        if mesero:
-            print(f"Bienvenido, {mesero.nombre}.")
-            self.menu_mesero(mesero)
-        else:
-            print("ID o contraseña incorrectos. Intente de nuevo.")
-
-    def iniciar_sesion_administrador(self):
-        id_admin = input("Ingrese el ID del administrador: ")
-        while True:
-            try:
-                contrasena = int(input("Ingrese la contraseña del administrador: "))
-                break
-            except ValueError:
-                print("Error: La contraseña debe ser un número. Intente nuevamente.")
-        administrador = next(
-            (a for a in self.gestor_bar.bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
-        if administrador:
-            print(f"Bienvenido, {administrador.nombre}.")
-            self.menu_administrador(administrador)
-        else:
-            print("ID o contraseña incorrectos. Intente de nuevo.")
-
     def menu_inicial(self):
         while True:
-            print("\n--- Menú Principal ---")
-            print("1. Iniciar sesión como Mesero")
-            print("2. Iniciar sesión como Administrador")
-            print("3. Guardar datos")
-            print("4. Salir")
+            print("\n--- Menú Inicial ---")
+            print("1. Iniciar sesión como mesero")
+            print("2. Iniciar sesión como administrador")
+            print("3. Salir")
             opcion = input("Seleccione una opción: ")
             if opcion == "1":
-                self.iniciar_sesion_mesero()
+                self.sesion.iniciar_sesion_mesero(self.menu_mesero)
             elif opcion == "2":
-                self.iniciar_sesion_administrador()
+                self.sesion.iniciar_sesion_administrador(self.menu_administrador)
             elif opcion == "3":
-                self.guardar_datos_json()
-            elif opcion == "4":
-                print("Saliendo del sistema...")
+                print("Saliendo del sistema.")
                 break
             else:
                 print("Opción inválida. Intente de nuevo.")

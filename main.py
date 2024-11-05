@@ -96,8 +96,13 @@ class AppController:
 
     def iniciar_sesion_mesero(self):
         id_mesero = input("Ingrese el ID del mesero: ")
-        contrasena = int(input("Ingrese la contraseña del mesero: "))
-        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena),None)
+        while True:
+            try:
+                contrasena = int(input("Ingrese la contraseña del mesero: "))
+                break
+            except ValueError:
+                print("Error: La contraseña debe ser un número. Intente nuevamente.")
+        mesero = next((m for m in self.gestor_bar.bar.meseros if m.id == id_mesero and m.contrasena == contrasena), None)
         if mesero:
             print(f"Bienvenido, {mesero.nombre}.")
             self.menu_mesero(mesero)
@@ -106,13 +111,19 @@ class AppController:
 
     def iniciar_sesion_administrador(self):
         id_admin = input("Ingrese el ID del administrador: ")
-        contrasena = int(input("Ingrese la contraseña del administrador: "))
-        administrador = next((a for a in self.gestor_bar.bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
+        while True:
+            try:
+                contrasena = int(input("Ingrese la contraseña del administrador: "))
+                break
+            except ValueError:
+                print("Error: La contraseña debe ser un número. Intente nuevamente.")
+        administrador = next(
+            (a for a in self.gestor_bar.bar.administradores if a.id == id_admin and a.contrasena == contrasena), None)
         if administrador:
             print(f"Bienvenido, {administrador.nombre}.")
             self.menu_administrador(administrador)
         else:
-            print("Error: ID o contraseña incorrecta.")
+            print("ID o contraseña incorrectos. Intente de nuevo.")
 
     def menu_inicial(self):
         while True:

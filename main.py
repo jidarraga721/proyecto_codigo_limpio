@@ -176,3 +176,4 @@ class AppController:
             for factura in mesa.facturas:
                 total_ganancias += factura.total
         print(f"Las ganancias totales son: {total_ganancias} pesos.\n")
+

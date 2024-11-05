@@ -27,7 +27,6 @@ class Inventario:
             print("1. Añadir platillo al inventario")
             print("2. Volver al menú principal")
             opcion = input("Seleccione una opción: ")
-
             if opcion == "1":
                 nombre = input("Ingrese el nombre del platillo: ")
                 precio = int(input(f"Ingrese el precio de {nombre}: "))

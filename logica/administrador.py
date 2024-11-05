@@ -26,7 +26,7 @@ class Administrador(Registro):
         print(f"Ganancias de la mesa {mesa.id}: {ganancias} pesos.")
         return ganancias
 
-    def agregar_mesa(self, gestor_bar):
+    def agregar_mesa(self, gestor_bar) -> None:
         id_mesa = int(input("Ingrese el ID de la mesa: "))
         if any(mesa.id == id_mesa for mesa in gestor_bar.bar.mesas):
             print(f"Error: La mesa con ID {id_mesa} ya existe.")
@@ -35,7 +35,7 @@ class Administrador(Registro):
         gestor_bar.agregar_mesa(mesa)
         print(f"Mesa {id_mesa} añadida correctamente.\n")
 
-    def ver_facturas_mesa(self, gestor_bar):
+    def ver_facturas_mesa(self, gestor_bar) -> None:
         id_mesa = int(input("Ingrese el ID de la mesa para ver las facturas: "))
         mesa = next((m for m in gestor_bar.bar.mesas if m.id == id_mesa), None)
         if not mesa:

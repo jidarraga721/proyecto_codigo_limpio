@@ -28,7 +28,6 @@ class Administrador(Registro):
 
     def agregar_mesa(self, gestor_bar) -> None:
         id_mesa = int(input("Ingrese el ID de la mesa: "))
-        # Verificar si la mesa ya existe
         if any(mesa.id == id_mesa for mesa in gestor_bar.bar.mesas):
             print(f"Error: La mesa con ID {id_mesa} ya existe.")
             return

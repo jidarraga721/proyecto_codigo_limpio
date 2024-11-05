@@ -118,19 +118,15 @@ class AppController:
             print("1. Crear pedido")
             print("2. Ver factura")
             print("3. Volver al menú principal")
-
             opcion = input("Seleccione una opción: ")
-
             if opcion == "1":
                 id_mesa = int(input("Ingrese el ID de la mesa: "))
                 mesa = next((m for m in self.gestor_bar.bar.mesas if m.id == id_mesa), None)
-
                 if mesa:
                     factura = mesero.crear_pedido(mesa, self.inventario)
                     self.facturas.append(factura)
                 else:
                     print(f"Error: Mesa con ID {id_mesa} no encontrada.")
-
             elif opcion == "2":
                 self.ver_factura()
             elif opcion == "3":
